@@ -164,3 +164,64 @@ If you want more powerful app, you can do like following
     #name = name.capitalize()
     return f"Hello, {name}!"
 ```
+
+And more  
+application.py
+
+```Python
+
+  from flask import Flask, render_template
+
+  app = Flask(__name__)
+
+  @app.route('/')
+  def index():
+    return render_template("index.html")
+    #Need to make "template" folder and put html file there
+
+```
+
+`template/index.html`
+
+```HTML
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>My Page</title>
+    </head>
+    <body>
+      <h1>Hello World!</h1>
+    </body>
+  </html>
+```
+
+#### Using template
+
+application.py
+
+```Python
+
+  from flask import Flask, render_template
+
+  app = Flask(__name__)
+
+  @app.route('/')
+  def index():
+    headline = "Hello World!" #Add
+    return render_template("index.html", headline = headline) #Changed
+
+```
+
+`template/index.html`
+
+```HTML
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>My Page</title>
+    </head>
+    <body>
+      <h1>{{headline}}</h1>
+    </body>
+  </html>
+```
