@@ -165,7 +165,8 @@ If you want more powerful app, you can do like following
     return f"Hello, {name}!"
 ```
 
-And more  
+#### Jinja2
+
 application.py
 
 ```Python
@@ -195,7 +196,7 @@ application.py
   </html>
 ```
 
-#### Using template
+Then we can use variable with Jinja2 on HTML
 
 application.py
 
@@ -224,4 +225,224 @@ application.py
       <h1>{{headline}}</h1>
     </body>
   </html>
+```
+
+So we can do this kind of thing
+
+application.py
+
+```Python
+  import datetime
+  from flask import Flask, render_template
+
+  app = Flask(__name__)
+
+  @app.route('/')
+  def index():
+    now = datetime.datetime.now() #Changed
+    new_year = now.month == 1 and now.day == 1
+    return render_template("index.html", new_year = new_year) #Changed
+
+```
+
+`template/index.html`
+
+```HTML
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>Is it New Year??</title>
+      <style>body{text-align: center;}</style>
+    </head>
+    <body>
+      {% if new_year %} <!--Jinja2 way to write if statement-->
+        <h1>Happy New Year</h1>
+      {% else %}
+        <h1>NO</h1>
+      {% endif %}
+    </body>
+  </html>
+```
+
+#### Other Route
+
+application.py
+
+```Python
+  from flask import Flask, render_template
+
+  app = Flask(__name__)
+
+  @app.route('/')
+  def index():
+    return render_template("index.html")
+
+  @app.route("/more") #This route is added
+  def more():
+    return render_template("more.html")
+
+```
+
+`template/index.html`
+
+```HTML
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>My Page</title>
+    </head>
+    <body>
+      <h1>First Page</h1>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      </p>
+
+      <a href="{{url_for('more')}}">See more...</a>
+      <!---This is link for more function in Python, not more html-->
+    </body>
+  </html>
+```
+
+`template/more.html`
+
+```HTML
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>My Page</title>
+    </head>
+    <body>
+      <h1>Second Page</h1>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      </p>
+
+      <a href="{{url_for('index')}}">Go Back</a>
+      <!---This is link for index function in Python, not index html-->
+    </body>
+  </html>
+```
+
+Remove redundancy
+
+`template/layout.html`
+
+```HTML
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>My Page</title>
+    </head>
+    <body>
+      <h1>{% block heading %}{% endblock %}</h1>
+      {% block body %}
+      {% endblock %}
+    </body>
+  </html>
+```
+
+`template/index.html`
+
+```HTML
+  {% extends "layout.html" %}
+  {%block heading%}First Page{% endblock %}
+
+  {% block body%}
+    <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    </p>
+
+     <a href="{{url_for('more')}}">See more...</a>
+     <!---This is link for more function in Python, not more html-->
+  {% endblock %}
+```
+
+`template/more.html`
+
+```HTML
+  {% extends "layout.html" %}
+  {%block heading%}Second Page{% endblock %}
+
+  {% block body%}
+    <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    </p>
+
+    <a href="{{url_for('more')}}">Go back</a>
+    <!---This is link for more function in Python, not more html-->
+  {% endblock %}
+```
+
+#### FORM
+
+application.py
+
+```Python
+  from flask import Flask, render_template, request
+
+  app = Flask(__name__)
+
+  @app.route('/')
+  def index():
+    return render_template("index.html")
+
+  @app.route("/hello", methods=["POST"])
+  #For now /hello only accept post request,
+  #if you add GET request, you have to make a route for GET
+  def hello():
+    name = request.form.get("name") #access form value here
+    return render_template("hello.html", name = name)
+```
+
+`template/index.html`
+
+```HTML
+  {% extends "layout.html" %}
+  {%block heading%}First Page{% endblock %}
+
+  {% block body%}
+    <form action="{{url_for('hello')}}" method="post">
+    <!--Open hello function and render hello.html from hello function-->
+      <input type = "text" name = "name" placeholder = "Enter your name" >
+      <button>Submit</button>
+    </form>
+  {% endblock %}
+```
+
+`template/hello.html`
+
+```HTML
+  {% extends "layout.html" %}
+  {%block heading%}Hello!{% endblock %}
+
+  {% block body%}
+    Hello, {{ name }}!
+  {% endblock %}
+```
+
+#### Session
+
+```Python
+  from flask import Flask, render_template, request, session
+  #give access to a variable called "session"
+  #which can be used to keep values that are specific to a paticular user:client side
+  from flask_session import Session
+  #additional extension to sessions which allows them to be stored server-side
+
+  app = Flask(__name__)
+  app.config["SESSION_PERMANENT"] = False
+  app.config["SESSION_TYPE"] = "filesystem"
+  Session(app)
+
+  @app.route("/", methods = ["GET", "POST"])
+  def index:
+    if session.get("notes") is None:
+      session["notes"] =[] #if user doesn't have notes, create notes list
+    if request.method == "POST":
+      note = request.form.get("note") #get from form in HTML
+      session["notes"].append(note)
+      #note is created in HTML and appended with notes list in Python
+      #"notes" is stored in session which each user has uniquely
+    return render_template("index.html", notes = session["notes"])
+
 ```
