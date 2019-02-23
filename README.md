@@ -61,8 +61,10 @@ Let's focus on **Chapter3** and **Chapter4**
 
 `print("Hello world")`
 
-```
+```Python
 name = input()
+# If put something, inside of input()
+# Inside gonnabe appear name = input("Write something")
 print(f"Hello, {name}!")
 ```
 
@@ -71,6 +73,20 @@ print(f"Hello, {name}!")
 Type: Integer, String, Boolean, Float,None...
 
 List, dictionary, Tapple...
+
+If statement:
+If statement judge by True of False
+
+````Python
+
+number = input("1 + 1 は？")
+
+if number is 2:
+  print("Correct!")
+else:
+  print("YOU ARE STUDID")
+
+```
 
 #### Function
 
@@ -82,7 +98,7 @@ function.py
 
   for i in range(10):
     print("{} squared is {}".format(i, square(i)))
-```
+````
 
 If import above, and run in another file,
 module.py
