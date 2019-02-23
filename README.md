@@ -118,6 +118,26 @@ If statement judge by True of False
     print("{} squared is {}".format(i, square(i)))
 ```
 
+#### Scope
+
+```Python
+  def sumBetweenNum(numA, numB):
+    number = 0
+    # number's scope is inside of function
+    for i in range(numA, numB):
+        number += i
+    # scope of i is only inside for loop
+    number += numB
+    return number
+
+  number1 = 1
+  number2 = 4
+  #these scope is everywhere in file
+
+  print(sumBetweenNum(number1, number2))
+
+```
+
 If import above, and run in another file,
 module.py
 
