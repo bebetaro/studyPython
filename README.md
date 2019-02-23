@@ -77,15 +77,12 @@ List, dictionary, Tapple...
 If statement:
 If statement judge by True of False
 
-````Python
-
-number = input("1 + 1 は？")
-
-if number is 2:
-  print("Correct!")
-else:
-  print("YOU ARE STUDID")
-
+```Python
+  number = input("1 + 1 は？")
+  if number is 2:
+    print("Correct!")
+  else:
+    print("YOU ARE STUDID")
 ```
 
 #### Function
@@ -98,7 +95,7 @@ function.py
 
   for i in range(10):
     print("{} squared is {}".format(i, square(i)))
-````
+```
 
 If import above, and run in another file,
 module.py
