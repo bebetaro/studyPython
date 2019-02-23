@@ -1,1 +1,2 @@
-print("5歳くらいの女の子を犯したいんじゃ～")
+name = "neetmaster"
+print(f"Hello, {name}!")
