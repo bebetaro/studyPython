@@ -74,7 +74,16 @@ Type: Integer, String, Boolean, Float,None...
 
 List, dictionary, Tapple...
 
-If statement:
+##### How to change type?
+
+`str = input()`  
+The value you get from input() is str type,  
+but if you want number, you should try cast!  
+`number = int(str)`  
+Now you can get number from input().
+
+#### If statement:
+
 If statement judge by True of False
 
 ```Python
