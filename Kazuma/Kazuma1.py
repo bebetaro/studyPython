@@ -1,2 +1,1 @@
-print("Hello, chinchin!")
-print("chinchinchinchinchinchinchin")
+print("5歳くらいの女の子を犯したいんじゃ～")
