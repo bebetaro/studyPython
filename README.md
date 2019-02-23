@@ -88,12 +88,20 @@ If statement judge by True of False
 
 ```Python
   number = input("1 + 1 は？")
-  if number is 2:
+  if number is 2: #if you don't cast, str is compared to int
+    #Of course it's fault
     print("Correct!")
     print(number is 2)
   else:
-    print("YOU ARE STUDID")
+    print("YOU ARE STUPID")
     print(number is 2)
+```
+
+#### for loop
+
+```Python
+  for i in range(10): #Basic syntax is this
+    i++ # drive loop and make your logic
 ```
 
 #### Function
