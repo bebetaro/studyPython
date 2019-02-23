@@ -10,7 +10,7 @@ Setting emai and username
 `git config --global user.email "emailaddress"`  
 `git config --global user.name "username"`
 
-About "PUSH", "FETCH", "PULL"
+## COMMIT -> FETCH -> PULL -> PUSH
 
 # 1. Install Python3 or Anaconda
 
@@ -89,7 +89,7 @@ If statement judge by True of False
 
 #### Function
 
-function.py
+`function.py`
 
 ```Python
   def square(x): #declare before use
