@@ -2,12 +2,25 @@
 
 For study Python with web programming
 
+# 0. Install Git
+
+[Git](https://git-scm.com/)
+
+Setting emai and username  
+`git config --global user.email "emailaddress"`  
+`git config --global user.name "username"`
+
+About "PUSH", "FETCH", "PULL"
+
 # 1. Install Python3 or Anaconda
 
 [Python](https://www.python.org/downloads/)  
 [Anaconda](https://www.anaconda.com/distribution/)
 
 # 2.Setting for Python
+
+Check Environmetal Variable(環境変数)
+Where being abele to "python" and "pip"
 
 # 3. Install Flask
 
