@@ -1,4 +1,4 @@
-name = "neetmasuter"
-name2 = input()
-print(f"Hello, {name}!")
-print(f"Go to hell, {name2}!")
+def square(x):
+    return x*x
+for i in range(1, 10):
+    print("{} squared is {}".format(i, square(i)))
