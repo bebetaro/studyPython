@@ -1,6 +1,8 @@
 # studyPython
 
 For study Python with web programming
+For study yourself
+http://diveintopython3-ja.rdy.jp/table-of-contents.html#your-first-python-program
 
 # 0. Install Git
 
