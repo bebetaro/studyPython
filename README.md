@@ -8,9 +8,12 @@ http://diveintopython3-ja.rdy.jp/table-of-contents.html#your-first-python-progra
 
 [Git](https://git-scm.com/)
 
-Setting emai and username  
+Setting email and username  
 `git config --global user.email "emailaddress"`  
 `git config --global user.name "username"`
+
+If you need lock your file
+`git lfs track "targetfolder/targetarea.extension" --lockable`
 
 ## COMMIT -> FETCH -> PULL -> PUSH
 
