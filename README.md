@@ -516,3 +516,84 @@ application.py
     return render_template("index.html", notes = session["notes"])
 
 ```
+
+# SQL
+
+SQL is a language designed to interact with the relational databases.
+
+## Data Types
+
+SQL has following data types
+
+**These are regular types**  
+・_INTEGER_  
+・_DECIMAL_  
+・_SERIAL_:an automatically incrementing integer  
+・_VARCHAR_: variable length of characters, i.e. string  
+・_TIMESTAMP_  
+・_BOOLEAN_  
+・_ENUM_: one of a discrete number of possible values
+
+**These are additonal types**  
+・_NOT NULL_ : field must have a value; if field does not have a value, entry will be rejected  
+・U*NIQUE* : no two fields in this column can have the same value  
+・_PRIMARY KEY_ : the main way to index a table  
+・_DEFAULT_ : set a default value for a column if no other value is given  
+・_CHECK_ : bound values; e.g. values greater than 50
+
+## Connect with Database
+
+use command `psql <database>` if it is online `psql <databaseURL>`
+
+## CREATE Database
+
+Declare `CREATE TABLE` first
+
+```SQL
+CREATE TABLE flights (
+      id SERIAL PRIMARY KEY,
+      origin VARCHAR NOT NULL,
+      destination VARCHAR NOT NULL,
+      duration INTEGER NOT NULL
+  );
+```
+
+`flights` is **table name**  
+`id, origin, destination, duration` are **user defined columns**  
+`SERIAL, VARCHAR, INTEGER` are **Data Types**  
+`PRIMARY KEY, NOT NULL` are **additonal types**
+
+## INSERT Database
+
+```SQL
+INSERT INTO flights
+      (origin, destination, duration)
+      VALUES ('New York', 'London', 415);
+```
+
+```SQL
+INSERT INTO "table name"
+  (ColumnA, ColumnB, ColumnC...)
+  VALUES(VARCHAR, VARCHAR, INTEGER)
+```
+
+We don't need insert `id` because `id` is `SERIAL`, which means automatically increment
+
+## SELECT FROM TABLE
+
+```SQL
+SELECT * FROM flights;
+  SELECT origin, destination FROM flights;
+  SELECT * FROM flights WHERE id = 3;
+  SELECT * FROM flights WHERE origin = 'New York';
+  SELECT * FROM flights WHERE duration > 500;
+  SELECT * FROM flights WHERE destination = 'Paris' AND duration > 500;
+  SELECT * FROM flights WHERE destination = 'Paris' OR duration > 500;
+  SELECT AVG(duration) FROM flights WHERE origin = 'New York';
+  SELECT * FROM flights WHERE origin LIKE '%a%';
+  SELECT * FROM flights LIMIT 2;
+  SELECT * FROM flights ORDER BY duration ASC;
+  SELECT * FROM flights ORDER BY duration ASC LIMIT 3;
+  SELECT origin, COUNT(*) FROM flights GROUP BY origin;
+  SELECT origin, COUNT(*) FROM flights GROUP BY origin HAVING COUNT(*) > 1;
+```
