@@ -519,6 +519,9 @@ application.py
 
 # SQL
 
+Appendix for Beginner: [DB/SQL 入門編(paiza)](https://paiza.jp/works/sql/primer)  
+Appendix for Advanced: [Introduction to Databases/Stanford University](https://lagunita.stanford.edu/courses/DB/2014/SelfPaced/about)
+
 SQL is a language designed to interact with the relational databases.
 
 ## Data Types
@@ -583,17 +586,142 @@ We don't need insert `id` because `id` is `SERIAL`, which means automatically in
 
 ```SQL
 SELECT * FROM flights;
-  SELECT origin, destination FROM flights;
-  SELECT * FROM flights WHERE id = 3;
-  SELECT * FROM flights WHERE origin = 'New York';
-  SELECT * FROM flights WHERE duration > 500;
-  SELECT * FROM flights WHERE destination = 'Paris' AND duration > 500;
-  SELECT * FROM flights WHERE destination = 'Paris' OR duration > 500;
-  SELECT AVG(duration) FROM flights WHERE origin = 'New York';
-  SELECT * FROM flights WHERE origin LIKE '%a%';
-  SELECT * FROM flights LIMIT 2;
-  SELECT * FROM flights ORDER BY duration ASC;
-  SELECT * FROM flights ORDER BY duration ASC LIMIT 3;
-  SELECT origin, COUNT(*) FROM flights GROUP BY origin;
-  SELECT origin, COUNT(*) FROM flights GROUP BY origin HAVING COUNT(*) > 1;
+#Select everything from flights table
+SELECT origin, destination FROM flights;
+#Select origin and destination
+SELECT * FROM flights WHERE id = 3;
+#Select every data which has id = 3
+SELECT * FROM flights WHERE origin = 'New York';
+#Select every data of which origin is "New York"
+SELECT * FROM flights WHERE duration > 500;
+#Select every data of which duration is more than 500
+SELECT * FROM flights WHERE destination = 'Paris' AND duration > 500;
+#Select every data of which destination is "Paris" and duration is more than 500
+SELECT * FROM flights WHERE destination = 'Paris' OR duration > 500;
+#Select every data of which destination is "Paris" or duration is more than 500
+SELECT AVG(duration) FROM flights WHERE origin = 'New York';
+#Select every data of which origin is "New York" and calcurate average of duration
+SELECT * FROM flights WHERE origin LIKE '%a%';
+#Select every data of which origin contains any "a" character
+SELECT * FROM flights LIMIT 2;
+#Show 2 of every data
+SELECT * FROM flights ORDER BY duration ASC;
+#Show every data in ascending of duration
+SELECT * FROM flights ORDER BY duration ASC LIMIT 3;
+#Show 3 of every data in ascending of duration
+SELECT origin, COUNT(*) FROM flights GROUP BY origin;
+#Show origin and how many times the origin is shown by grouping origin
+SELECT origin, COUNT(*) FROM flights GROUP BY origin HAVING COUNT(*) > 1;
+#Show origin which is shown more than once and how many times the origin is shown by grouping origin
+```
+
+### Function
+
+**SUM**, **COUNT**, **MAX**, **MIN**, **AVG**...  
+We can use function whatever we use in Excel or something else
+
+## UPDATE AND DELETE
+
+### UPDATE
+
+```SQL
+UPDATE flights
+      SET duration = 430
+      #Point is "set", following is just condition
+      WHERE origin = 'New York'
+      AND destination = 'London';
+```
+
+### DELETE
+
+```SQL
+DELETE FROM flights
+      WHERE destination = 'Tokyo'
+```
+
+## Relational
+
+### REFERENCES
+
+```SQL
+CREATE TABLE passengers (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR NOT NULL,
+      flight_id INTEGER REFERENCES flights
+  );
+```
+
+`passengers`table uses `flight_id` from `flights`table  
+It means that `passengers`table connect with `flights`table now using `REFERENCES`
+
+### JOIN
+
+```SQL
+  SELECT origin, destination, name FROM flights JOIN passengers ON passengers.flight_id = flights.id;
+  SELECT origin, destination, name FROM flights JOIN passengers ON passengers.flight_id = flights.id WHERE name = 'Alice';
+  SELECT origin, destination, name FROM flights LEFT JOIN passengers ON passengers.flight_id = flights.id;
+```
+
+**JOIN** performs an _inner join_: only rows where both tables match the query will be returned. In this example, only `flights` with `passengers` will be returned.  
+**ON** indicates how the two tables are related. In this example, the column `flight_id` in `passengers` reflects values in the column `id` in `flights`.  
+**LEFT JOIN** includes _rows from the first table listed even if there is no match_ (e.g. there are no passengers on that flight). **RIGHT JOIN** is vice versa (e.g. passengers with no flights).
+
+### NESTED QUERY
+
+```SQL
+ SELECT * FROM flights WHERE id IN
+  (SELECT flight_id FROM passengers GROUP BY flight_id HAVING COUNT(*) > 1);
+```
+
+First inner query seach for `flight_id` from `passenger` table which has more than 1 passenger.  
+**=>return id (e.g. id = 1, 2, 6)**  
+Second, outer query search for every rows from `flights` table of which `id` is in inner query.  
+**=> seaching in id(e.g. 1, 2, 6) and show all of data of which id is 1 or 2 or 6**
+
+## SQLAlchemy
+
+### install
+
+`pip install sqlalchemy`
+
+### TEST CODE
+
+```Python
+  import os
+
+  from sqlalchemy import create_engine
+  from sqlalchemy.orm import scoped_session, sessionmaker
+
+  engine = create_engine(os.getenv("DATABASE_URL")) # database engine object from SQLAlchemy that manages connections to the database
+                                                    # DATABASE_URL is an environment variable that indicates where the database lives
+  db = scoped_session(sessionmaker(bind=engine))    # create a 'scoped session' that ensures different users' interactions with the
+                                                    # database are kept separate
+
+  flights = db.execute("SELECT origin, destination, duration FROM flights").fetchall() # execute this SQL command and return all of the results
+  for flight in flights
+      print(f"{flight.origin} to {flight.destination}, {flight.duration} minutes.") # for every flight, print out the flight info
+```
+
+### CSV Ver.
+
+```Python
+  import csv
+
+  # same import and setup statements as above
+  from sqlalchemy import create_engine
+  from sqlalchemy.orm import scoped_session, sessionmaker
+
+  engine = create_engine(os.getenv("DATABASE_URL")) # database engine object from SQLAlchemy that manages connections to the database
+                                                    # DATABASE_URL is an environment variable that indicates where the database lives
+  db = scoped_session(sessionmaker(bind=engine))    # create a 'scoped session' that ensures different users' interactions with the
+                                                    # database are kept separate
+
+
+  f = open("flights.csv")
+  reader = csv.reader(f)
+  for origin, destination, duration in reader: # loop gives each column a name
+      db.execute("INSERT INTO flights (origin, destination, duration) VALUES (:origin, :destination, :duration)",
+                  {"origin": origin, "destination": destination, "duration": duration}) # substitute values from CSV line into SQL command, as per this dict
+      print(f"Added flight from {origin} to {destination} lasting {duration} minutes.")
+  db.commit() # transactions are assumed, so close the transaction finished
 ```
