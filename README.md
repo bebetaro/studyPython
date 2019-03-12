@@ -725,3 +725,55 @@ Second, outer query search for every rows from `flights` table of which `id` is 
       print(f"Added flight from {origin} to {destination} lasting {duration} minutes.")
   db.commit() # transactions are assumed, so close the transaction finished
 ```
+
+## Mini App
+
+application.py
+
+```python
+@app.route("/")
+  def index():
+      flights = db.execute("SELECT * FROM flights").fetchall()
+      return render_template("index.html", flights=flights)
+
+@app.route("/book", methods=["POST"])
+  def book():
+      # Get form information.
+      name = request.form.get("name")
+      try:
+          flight_id = int(request.form.get("flight_id"))
+      except ValueError:
+          return render_template("error.html", message="Invalid flight number.")
+
+      # Make sure the flight exists.
+      if db.execute("SELECT * FROM flights WHERE id = :id", {"id": flight_id}).rowcount == 0:
+          return render_template("error.html", message="No such flight with that id.")
+      db.execute("INSERT INTO passengers (name, flight_id) VALUES (:name, :flight_id)",
+              {"name": name, "flight_id": flight_id})
+      db.commit()
+      return render_template("success.html")
+```
+
+index.html
+
+```html
+<form action="{{ url_for('book') }}" method="post">
+  <div class="form-group">
+    <select class="form-control" name="flight_id">
+      {% for flight in flights %}
+      <option value="{{ flight.id }}"
+        >{{ flight.origin }} to {{ flight.destination }}</option
+      >
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="form-group">
+    <input class="form-control" name="name" placeholder="Passenger Name" />
+  </div>
+
+  <div class="form-group">
+    <button class="btn btn-primary">Book Flight</button>
+  </div>
+</form>
+```
