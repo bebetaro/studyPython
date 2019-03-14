@@ -1,3 +1,53 @@
+<!-- TOC -->
+
+- [studyPython](#studypython)
+- [0. Install Git](#0-install-git)
+  - [COMMIT -> FETCH -> PULL -> PUSH](#commit---fetch---pull---push)
+- [1. Install Python3 or Anaconda](#1-install-python3-or-anaconda)
+- [2.Setting for Python](#2setting-for-python)
+- [3. Install Flask](#3-install-flask)
+  - [What is Flask?](#what-is-flask)
+  - [How to install it?](#how-to-install-it)
+  - [Sample Code](#sample-code)
+- [4. Python](#4-python)
+  - [Basic](#basic)
+    - [Print](#print)
+    - [Sequences](#sequences)
+      - [How to change type?](#how-to-change-type)
+    - [If statement:](#if-statement)
+    - [for loop](#for-loop)
+    - [Function](#function)
+    - [Scope](#scope)
+    - [Class](#class)
+- [5. Flask](#5-flask)
+  - [Flask](#flask)
+  - [Jinja2](#jinja2)
+  - [Other Route](#other-route)
+  - [FORM](#form)
+  - [Session](#session)
+- [6. SQL](#6-sql)
+  - [Data Types](#data-types)
+  - [Connect with Database](#connect-with-database)
+  - [CREATE Database](#create-database)
+  - [INSERT Database](#insert-database)
+  - [SELECT FROM TABLE](#select-from-table)
+    - [Function](#function-1)
+  - [UPDATE AND DELETE](#update-and-delete)
+    - [UPDATE](#update)
+    - [DELETE](#delete)
+  - [Relational](#relational)
+    - [REFERENCES](#references)
+    - [JOIN](#join)
+    - [NESTED QUERY](#nested-query)
+  - [SQLAlchemy](#sqlalchemy)
+    - [install](#install)
+    - [TEST CODE](#test-code)
+    - [CSV Ver.](#csv-ver)
+  - [Mini App; just for understanding](#mini-app-just-for-understanding)
+- [7. ROM](#7-rom)
+
+<!-- /TOC -->
+
 # studyPython
 
 For study Python with web programming
@@ -50,15 +100,13 @@ http://flask.pocoo.org/
     return 'Hello, World!'
 ```
 
-# 4. Materials
+# 4. Python
 
 CS50's Web Programming with Python and JavaScript  
 https://www.edx.org/course/cs50s-web-programming-with-python-and-javascript
 
 Don't need to complete all of chapters  
 Let's focus on **Chapter3** and **Chapter4**
-
-## Chapter3 Flask
 
 ### Basic
 
@@ -179,7 +227,9 @@ now you get 100 from module.py
   print(p.y)
 ```
 
-### Flask
+# 5. Flask
+
+## Flask
 
 Flask is micro web framework for Python
 
@@ -235,7 +285,7 @@ If you want more powerful app, you can do like following
     return f"Hello, {name}!"
 ```
 
-#### Jinja2
+## Jinja2
 
 application.py
 
@@ -334,7 +384,7 @@ application.py
   </html>
 ```
 
-#### Other Route
+## Other Route
 
 application.py
 
@@ -443,7 +493,7 @@ Remove redundancy
   {% endblock %}
 ```
 
-#### FORM
+## FORM
 
 application.py
 
@@ -490,7 +540,10 @@ application.py
   {% endblock %}
 ```
 
-#### Session
+## Session
+
+install  
+`pip install flask-session`
 
 ```Python
   from flask import Flask, render_template, request, session
@@ -517,7 +570,7 @@ application.py
 
 ```
 
-# SQL
+# 6. SQL
 
 Appendix for Beginner: [DB/SQL 入門編(paiza)](https://paiza.jp/works/sql/primer)  
 Appendix for Advanced: [Introduction to Databases/Stanford University](https://lagunita.stanford.edu/courses/DB/2014/SelfPaced/about)
@@ -726,32 +779,40 @@ Second, outer query search for every rows from `flights` table of which `id` is 
   db.commit() # transactions are assumed, so close the transaction finished
 ```
 
-## Mini App
+## Mini App; just for understanding
 
 application.py
 
 ```python
-@app.route("/")
-  def index():
-      flights = db.execute("SELECT * FROM flights").fetchall()
-      return render_template("index.html", flights=flights)
+  import os
 
-@app.route("/book", methods=["POST"])
-  def book():
-      # Get form information.
-      name = request.form.get("name")
-      try:
-          flight_id = int(request.form.get("flight_id"))
-      except ValueError:
-          return render_template("error.html", message="Invalid flight number.")
+  from sqlalchemy import create_engine
+  from sqlalchemy.orm import scoped_session, sessionmaker
 
-      # Make sure the flight exists.
-      if db.execute("SELECT * FROM flights WHERE id = :id", {"id": flight_id}).rowcount == 0:
-          return render_template("error.html", message="No such flight with that id.")
-      db.execute("INSERT INTO passengers (name, flight_id) VALUES (:name, :flight_id)",
-              {"name": name, "flight_id": flight_id})
-      db.commit()
-      return render_template("success.html")
+  engine = create_engine(os.getenv("DATABASE_URL"))
+  db = scoped_session(sessionmaker(bind=engine))
+
+  @app.route("/")
+    def index():
+        flights = db.execute("SELECT * FROM flights").fetchall()
+        return render_template("index.html", flights=flights)
+
+  @app.route("/book", methods=["POST"])
+    def book():
+        # Get form information.
+        name = request.form.get("name")
+        try:
+            flight_id = int(request.form.get("flight_id"))
+        except ValueError:
+            return render_template("error.html", message="Invalid flight number.")
+
+        # Make sure the flight exists.
+        if db.execute("SELECT * FROM flights WHERE id = :id", {"id": flight_id}).rowcount == 0:
+            return render_template("error.html", message="No such flight with that id.")
+        db.execute("INSERT INTO passengers (name, flight_id) VALUES (:name, :flight_id)",
+                {"name": name, "flight_id": flight_id})
+        db.commit()
+        return render_template("success.html")
 ```
 
 index.html
@@ -777,3 +838,5 @@ index.html
   </div>
 </form>
 ```
+
+# 7. ROM
