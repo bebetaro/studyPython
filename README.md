@@ -2,9 +2,9 @@
 
 - [studyPython](#studypython)
 - [0. Install Git](#0-install-git)
-  - [COMMIT -> FETCH -> PULL -> PUSH](#commit---fetch---pull---push)
 - [1. Install Python3 or Anaconda](#1-install-python3-or-anaconda)
-- [2.Setting for Python](#2setting-for-python)
+- [2. Setting for Python](#2-setting-for-python)
+  - [pipenv](#pipenv)
 - [3. Install Flask](#3-install-flask)
   - [What is Flask?](#what-is-flask)
   - [How to install it?](#how-to-install-it)
@@ -24,7 +24,7 @@
   - [Jinja2](#jinja2)
   - [Other Route](#other-route)
   - [FORM](#form)
-  - [Session](#session)
+  - [flask_session](#flask_session)
 - [6. SQL](#6-sql)
   - [Data Types](#data-types)
   - [Connect with Database](#connect-with-database)
@@ -45,6 +45,16 @@
     - [CSV Ver.](#csv-ver)
   - [Mini App; just for understanding](#mini-app-just-for-understanding)
 - [7. ROM](#7-rom)
+  - [OOP(Obejct-Oriented-Programming)](#oopobejct-oriented-programming)
+  - [ORM(Object Relational Mapping)](#ormobject-relational-mapping)
+  - [Pythonic way for SQL by SQLAlchemy](#pythonic-way-for-sql-by-sqlalchemy)
+    - [INSERT](#insert)
+    - [SELECT](#select)
+    - [UPDATE](#update-1)
+    - [DELETE](#delete-1)
+    - [COMMIT](#commit)
+  - [MiniApps using SQLAlchemy](#miniapps-using-sqlalchemy)
+  - [Relationships](#relationships)
 
 <!-- /TOC -->
 
@@ -65,17 +75,23 @@ Setting email and username
 If you need lock your file  
 `git lfs track "targetfolder/targetarea.extension" --lockable`
 
-## COMMIT -> FETCH -> PULL -> PUSH
+**COMMIT -> FETCH -> PULL -> PUSH**
 
 # 1. Install Python3 or Anaconda
 
 [Python](https://www.python.org/downloads/)  
 [Anaconda](https://www.anaconda.com/distribution/)
 
-# 2.Setting for Python
+# 2. Setting for Python
 
 Check Environmetal Variable(環境変数)
 Where being abele to "python" and "pip"
+
+## pipenv
+
+`pip install pipenv`  
+`pipenv install [package]`  
+You can manage your environment on virtual python environment
 
 # 3. Install Flask
 
@@ -540,7 +556,7 @@ application.py
   {% endblock %}
 ```
 
-## Session
+## flask_session
 
 install  
 `pip install flask-session`
@@ -840,3 +856,365 @@ index.html
 ```
 
 # 7. ROM
+
+## OOP(Obejct-Oriented-Programming)
+
+OOP allows for the creation of classes, which are the generic forms of objects.
+For example if there is a car class, car class will generate TOYOTA object, HONDA object, NISSAN object.
+
+Simple example:
+
+```Python
+  class Car:
+    def __init__(self, door_num, passenger_num, engine):
+      self.door_num = door_num
+      self.passenger_num = passsenger_num
+      self.engine = engine
+
+    def car_info(self):
+      print(f"This car is {self.engine}cc engine, which has {self.door_num}door and can load {self.passenger_num}persons.")
+
+  #Create a car object
+  toyota = Car(door_num = 4, passenger_num = 4, engine = 2000)
+
+  #Be able to access property of object
+  toyota.engine += 500
+
+  print(toyota.door_num)
+  print(toyota.passenger_num)
+  print(toyota.engine)
+
+  #Set main() function
+  def main():
+    honda = Car(door_num = 2, passenger_num = 2, engine = 660)
+    honda.car_info()
+
+  if __name__ == __main__:
+    main()
+```
+
+Complex Sample:
+
+```python
+ class Flight:
+
+  # set id variable here
+  # counter is not changed in each objects
+  # counter keeps values and incremented when object is created
+  counter = 1
+
+  def __init__(self, origin, destination, duration):
+    # Keep track of id number.
+    self.id = Flight.counter
+    Flight.counter += 1
+
+    # Keep track of passengers.
+    self.passengers = []
+
+    # Details about flight.
+    self.origin = origin
+    self.destination = destination
+    self.duration = duration
+
+  def print_info(self):
+    print(f"Flight origin: {self.origin}")
+    print(f"Flight destination: {self.destination}")
+    print(f"Flight duration: {self.duration}")
+
+    print()
+    print("Passengers:")
+    for passenger in self.passengers:
+      print(f"{passenger.name}")
+
+  # When call add_passenger with passenger object
+  # This function will tie with them
+  def add_passenger(self, p):
+          self.passengers.append(p)
+          p.flight_id = self.id
+
+```
+
+```python
+# Create flight.
+  f1 = Flight(origin="New York", destination="Paris", duration=540)
+
+  # Create passengers.
+  alice = Passenger(name="Alice")
+  bob = Passenger(name="Bob")
+
+  # Add passengers.
+  f1.add_passenger(alice)
+  f1.add_passenger(bob)
+
+  # print_info() should reflect value from f1 with Alice and Bob
+  f1.print_info()
+```
+
+## ORM(Object Relational Mapping)
+
+Object-Relational Mapping, or ORM, allows for the combination of the OOP world of Python and the relational database world of SQL.  
+With ORM, Python classes, methods, and objects become the tools for interacting with SQL databases. To do this, the Flask-SQLAlchemy package will be used.
+
+`pip install flask_sqlalchemy`
+
+```python
+module.py
+
+from flask_sqlalchemy import SQLAlchemy
+
+  db = SQLAlchemy()
+
+  class Flight(db.Model):
+  # class inherit from db.Model
+      __tablename__ = "flights"
+      # __tablename__ is correspond with the table name in database
+      id = db.Column(db.Integer, primary_key=True)
+      origin = db.Column(db.String, nullable=False)
+      destination = db.Column(db.String, nullable=False)
+      duration = db.Column(db.Integer, nullable=False)
+
+
+  class Passenger(db.Model):
+      __tablename__ = "passengers"
+      id = db.Column(db.Integer, primary_key=True)
+      name = db.Column(db.String, nullable=False)
+      flight_id = db.Column(db.Integer, db.ForeignKey("flights.id"), nullable=False)
+      # "flights.id" is a foreign key from __tablename__flight, not class Flight
+
+```
+
+```python
+application.py
+import os
+
+from flask import Flask, render_template, request
+
+  # Import table definitions.
+from models import *
+
+app = Flask(__name__)
+
+  # Tell Flask what SQLAlchemy databas to use.
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+  # Link the Flask app with the database (no Flask app is actually being run yet).
+db.init_app(app)
+
+def main():
+  # Create tables based on each table definition in `models`
+  db.create_all()
+
+if __name__ == "__main__":
+  # Allows for command line interaction with Flask application
+  with app.app_context():
+  main()
+```
+
+## Pythonic way for SQL by SQLAlchemy
+
+### INSERT
+
+SQL
+
+```SQL
+ INSERT INTO flights
+      (origin, destination, duration)
+      VALUES ('New York', 'Paris', 540)
+```
+
+Python
+
+```python
+  flight = Flight(origin="New York", destination="Paris", duration=540)
+  db.session.add(flight)
+```
+
+### SELECT
+
+SQL
+
+```SQL
+  SELECT * FROM flights;
+  SELECT * FROM flights
+      WHERE origin = 'Paris';
+  SELECT * FROM flights
+      WHERE origin = 'Paris' LIMIT 1;
+  SELECT COUNT(*) FROM flights
+      WHERE origin = 'Paris';
+  SELECT * FROM flights WHERE id = 28;
+  SELECT * FROM flights
+      ORDER BY origin;
+  SELECT * FROM flights
+      ORDER by origin DESC;
+  SELECT * FROM flights
+      WHERE origin != 'Paris';
+  SELECT * FROM flights
+      WHERE origin LIKE '%a%';
+  SELECT * FROM flights
+      WHERE origin IN ('Tokyo', 'Paris');
+  SELECT * FROm flights
+      WHERE origin = "Paris"
+      AND duration > 500;
+  SELECT * FROm flights
+      WHERE origin = "Paris"
+      AND duration > 500;
+  SELECT * FROM flights JOIN passengers
+      ON flights.id = passengers.flight_id;
+```
+
+Python
+
+```Python
+  Flight.query.all()
+  Flight.query.fliter_by(origin="Paris").all()
+  Flight.query.filter_by(origin="Paris").first()
+  Flight.query.filter_by(origin="Paris").count()
+  Flight.query.get(28)
+  Flight.query.order_by(Flight.origin).all()
+  Flight.query.order_by(Flights.origin.desc()).all()
+  Flight.query.filter(Flight.origin != "Paris").all()
+  Flight.query.filter(Fligiht.origin.like("%a%")).all()
+  Flight.query.filter(Flight.origin.in_(["Tokyo", "Paris"])).all()
+  Flight.query.filter(and_(Flight.origin == "Paris", Flight.duration > 500)).all()
+  Flight.query.filter(or_(Flight.origin == "Paris", Flight.duration > 500)).all()
+  db.session.query(Flight, Passenger).filter(Flight.id == Passenger.flight_id).all()
+```
+
+### UPDATE
+
+SQL
+
+```SQL
+PDATE flights SET duration = 280
+      WHERE id = 6;
+```
+
+Python
+
+```Python
+flight = Flight.query.get(6)
+  flight.duration = 280
+```
+
+### DELETE
+
+SQL
+
+```SQL
+ DELETE FROM flights WHERE id = 28;
+```
+
+Python
+
+```Python
+  flight = Flight.query.get(28)
+  db.session.delete(flight)
+```
+
+### COMMIT
+
+SQL: COMMIT;
+
+Python: `db.session.commit()`
+
+## MiniApps using SQLAlchemy
+
+```Python
+  from flask import Flask, render_template, request
+  from models import *
+
+  app = Flask(__name__)
+  app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+  app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+  db.init_app(app)
+
+
+  @app.route("/")
+  def index():
+      flights = Flight.query.all()
+      return render_template("index.html", flights=flights)
+
+
+  @app.route("/book", methods=["POST"])
+  def book():
+      """Book a flight."""
+
+      # Get form information.
+      name = request.form.get("name")
+      try:
+          flight_id = int(request.form.get("flight_id"))
+      except ValueError:
+          return render_template("error.html", message="Invalid flight number.")
+
+      # Make sure the flight exists.
+      flight = Flight.query.get(flight_id)
+      if flight is None:
+          return render_template("error.html", message="No such flight with that id.")
+
+      # Add passenger.
+      '''
+      passenger = Passenger(name=name, flight_id=flight_id)
+      db.session.add(passenger)
+      db.session.commit()
+      '''
+      flight.add_passenger(name)
+      '''
+      **module.py**
+      def add_passenger(self, name):
+        p = Passenger(name=name, flight_id=self.id)
+        db.session.add(p)
+        db.session.commit()
+      '''
+      return render_template("success.html")
+
+
+  @app.route("/flights")
+  def flights():
+      """List all flights."""
+      flights = Flight.query.all()
+      return render_template("flights.html", flights=flights)
+
+
+  @app.route("/flights/<int:flight_id>")
+  def flight(flight_id):
+      """List details about a single flight."""
+
+      # Make sure flight exists.
+      flight = Flight.query.get(flight_id)
+      if flight is None:
+          return render_template("error.html", message="No such flight.")
+
+      # Get all passengers.
+      passengers = Passenger.query.filter_by(flight_id=flight_id).all()
+      return render_template("flight.html", flight=flight, passengers=passengers)
+
+```
+
+## Relationships
+
+**SQLAlchemy relationships** are an easy way to take one table and relate it to another table, such that the each can refer to the other.  
+A relationship is set up with a single line, which in this case would be added to the definition of the Flight class.
+
+`passengers = db.relationship("Passenger", backref="flight", lazy=True)`
+
+Then we can access passengers from flight object
+
+`passengers = flight.passengers`
+
+SQL
+
+```SQL
+  SELECT * FROM passengers
+      WHERE flight_id = 1
+  SELECT * FROM flights JOIN passengers
+      ON flights.id = passengers.flight_id
+      WHERE passengers.name = 'Alice';
+```
+
+Python
+
+```Python
+  Flight.query.get(1).passengers
+  Passenger.query.filter_by(name="Alice").first().flight
+```
