@@ -55,6 +55,10 @@
     - [COMMIT](#commit)
   - [MiniApps using SQLAlchemy](#miniapps-using-sqlalchemy)
   - [Relationships](#relationships)
+- [API](#api)
+  - [JSON](#json)
+  - [HTTP METHOD](#http-method)
+  - [Marshmallow](#marshmallow)
 
 <!-- /TOC -->
 
@@ -959,7 +963,7 @@ With ORM, Python classes, methods, and objects become the tools for interacting 
 
 **BASIC CODE**
 
-_db.py_
+_db.py_ or _module.py_
 
 ```Python
 from flask import Flask
@@ -989,11 +993,10 @@ if __name__ == "__main__":
         main()
 ```
 
-_app.py_
+_app.py_ or _route.py_
 
 ```Python
 from db import app, db, User
-
 
 @app.route("/")
 def main():
@@ -1010,7 +1013,7 @@ if __name__ == "__main__":
 
 ```
 
-Following code is not sure about reliablity
+**Following code is not sure about reliablity**
 
 ```Python
 module.py
@@ -1272,4 +1275,74 @@ Python
 ```Python
   Flight.query.get(1).passengers
   Passenger.query.filter_by(name="Alice").first().flight
+```
+
+# API
+
+An Application Programming Interface, or API, is a protocol for communication between different web applications or different components of the same application.
+
+## JSON
+
+JSON(Javascript Object Notation) is a simple way of representing information in human- and computer-readable way so that it can be passed between parts of web application.  
+Simple Example:JSON
+
+Flight.json
+
+```JSON
+{
+      "origin" : {
+          "city": "Tokyo",
+          "code": "HND"
+      },
+      "destination": {
+          "city": "Shanghai",
+          "code": "PVG"
+      },
+      "duration" : 185,
+      "passengers" : ["Alice", "Bob"]
+}
+```
+
+If you would like to retrive "city" under "origin" from Flight.json,  
+your code should be `city = Flight["origin"]["city"]`
+
+## HTTP METHOD
+
+**GET: get a resourse from API**  
+**POST: send a resource to API**  
+**PUT: update a resource in API**  
+**DELETE: delete a resource in API**  
+For those methods, Python has a library called "Requests"  
+`pipenv install requests`
+
+```Python
+import requests
+
+def main():
+  res = requests.get("http://www.google.com")
+  print(res.text)
+```
+
+## Marshmallow
+
+`pipenv install flask_marshmallow`  
+`pipenv install marshmallow_sqlalchemy`
+
+```Python
+from flask import jsonify
+from flask_marshmallow import Marshmarllow
+# Not import marshmallow_sqlalchemy but flask_marshmallow use
+
+ma = Marshmallow()
+
+class SchemaName(ma.ModelSchema):
+    class Meta:
+      model = className
+
+def main():
+  class_list = className.query.all()
+  # Now being able to return json format
+  # many=True enable to use list model
+  return jsonify({"data":SchemaName(many=True).dump(class_list).data})
+
 ```
