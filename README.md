@@ -1303,6 +1303,21 @@ Flight.json
 }
 ```
 
+You can store JSON data in your database
+
+```Python
+class Json(db.Model):
+    __tablename__ = "json"
+    id = db.Column(db.Integer, primary_key=True)
+    status = db.Column(db.JSON, nullable=False)
+
+
+class JsonSchema(ma.ModelSchema):
+    class Meta:
+        model = Json
+
+```
+
 If you would like to retrive "city" under "origin" from Flight.json,  
 your code should be `city = Flight["origin"]["city"]`
 
