@@ -55,6 +55,10 @@
     - [COMMIT](#commit)
   - [MiniApps using SQLAlchemy](#miniapps-using-sqlalchemy)
   - [Relationships](#relationships)
+- [API](#api)
+  - [JSON](#json)
+  - [HTTP METHOD](#http-method)
+  - [Marshmallow](#marshmallow)
 
 <!-- /TOC -->
 
@@ -960,7 +964,61 @@ With ORM, Python classes, methods, and objects become the tools for interacting 
 
 `pip install flask_sqlalchemy`
 
-```python
+**BASIC CODE**
+
+_db.py_ or _module.py_
+
+```Python
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
+# define app first or SQLAlchemy cannot set engine
+app = Flask(__name__)
+# Using sqlite3, if there are no db, it will create automatically
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db/hello.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+db = SQLAlchemy(app)
+
+
+class User(db.Model):
+    __tablename__ = "user"
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String, nullable=False)
+    age = db.Column(db.Integer, nullable=False)
+
+# If open db.py directly this main function will work
+def main():
+    db.create_all()
+
+
+if __name__ == "__main__":
+    with app.app_context():
+        main()
+```
+
+_app.py_ or _route.py_
+
+```Python
+from db import app, db, User
+
+@app.route("/")
+def main():
+    user1 = User(username="BOBO", age=20)
+    db.session.add(user1)
+    db.session.commit()
+    user_list = User.query.all()
+    # For now open db and pick one item
+    return user_list[0].username
+
+
+if __name__ == "__main__":
+    app.run(debug=True, host="localhost", port=8080)
+
+```
+
+**Following code is not sure about reliablity**
+
+```Python
 module.py
 
 from flask_sqlalchemy import SQLAlchemy
@@ -1220,4 +1278,89 @@ Python
 ```Python
   Flight.query.get(1).passengers
   Passenger.query.filter_by(name="Alice").first().flight
+```
+
+# API
+
+An Application Programming Interface, or API, is a protocol for communication between different web applications or different components of the same application.
+
+## JSON
+
+JSON(Javascript Object Notation) is a simple way of representing information in human- and computer-readable way so that it can be passed between parts of web application.  
+Simple Example:JSON
+
+Flight.json
+
+```JSON
+{
+      "origin" : {
+          "city": "Tokyo",
+          "code": "HND"
+      },
+      "destination": {
+          "city": "Shanghai",
+          "code": "PVG"
+      },
+      "duration" : 185,
+      "passengers" : ["Alice", "Bob"]
+}
+```
+
+You can store JSON data in your database
+
+```Python
+class Json(db.Model):
+    __tablename__ = "json"
+    id = db.Column(db.Integer, primary_key=True)
+    status = db.Column(db.JSON, nullable=False)
+
+
+class JsonSchema(ma.ModelSchema):
+    class Meta:
+        model = Json
+
+```
+
+If you would like to retrive "city" under "origin" from Flight.json,  
+your code should be `city = Flight["origin"]["city"]`
+
+## HTTP METHOD
+
+**GET: get a resourse from API**  
+**POST: send a resource to API**  
+**PUT: update a resource in API**  
+**DELETE: delete a resource in API**  
+For those methods, Python has a library called "Requests"  
+`pipenv install requests`
+
+```Python
+import requests
+
+def main():
+  res = requests.get("http://www.google.com")
+  print(res.text)
+```
+
+## Marshmallow
+
+`pipenv install flask_marshmallow`  
+`pipenv install marshmallow_sqlalchemy`
+
+```Python
+from flask import jsonify
+from flask_marshmallow import Marshmarllow
+# Not import marshmallow_sqlalchemy but flask_marshmallow use
+
+ma = Marshmallow()
+
+class SchemaName(ma.ModelSchema):
+    class Meta:
+      model = className
+
+def main():
+  class_list = className.query.all()
+  # Now being able to return json format
+  # many=True enable to use list model
+  return jsonify({"data":SchemaName(many=True).dump(class_list).data})
+
 ```
