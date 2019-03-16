@@ -125,7 +125,7 @@ http://flask.pocoo.org/
 
 ```
 
-And `pipenv run flask run`
+And `pipenv run python app1.py`
 
 # 4. Python
 
