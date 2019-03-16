@@ -90,6 +90,7 @@ Where being abele to "python" and "pip"
 ## pipenv
 
 `pip install pipenv`  
+`pipenv --three`  
 `pipenv install [package]`  
 You can manage your environment on virtual python environment
 
@@ -101,7 +102,7 @@ http://flask.pocoo.org/
 
 ## How to install it?
 
-`pip install -U flask`
+`pipenv install flask`
 
 ## Sample Code
 
@@ -115,6 +116,8 @@ http://flask.pocoo.org/
   def hello():
     return 'Hello, World!'
 ```
+
+And `pipenv run flask run`
 
 # 4. Python
 
